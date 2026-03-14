@@ -1,7 +1,7 @@
 {
   "name": "aditya-app",
   "version": "1.0.0",
-  "repository": "https://github.com/YOUR_USERNAME/aditya-app.git",
+  "repository": "https://github.com/adityaswaroop/aditya-app.git",
   "description": "Your personal full-stack TypeScript web application starter",
   "license": "MIT",
   "private": true,
