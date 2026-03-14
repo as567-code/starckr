@@ -55,7 +55,7 @@ function HomePage() {
     }
   };
 
-  const message = `Welcome to the Boilerplate, ${user.firstName} ${user.lastName}!`;
+  const message = `Welcome back, ${user.firstName} ${user.lastName}!`;
   return (
     <AppLayout>
       <ScreenGrid>

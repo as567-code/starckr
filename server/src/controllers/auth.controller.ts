@@ -174,8 +174,13 @@ const register = async (
       lowercaseEmail,
       password,
     );
-    // Don't need verification email if testing
-    if (process.env.NODE_ENV === 'test') {
+    const sendgridConfigured =
+      process.env.SENDGRID_API_KEY &&
+      !process.env.SENDGRID_API_KEY.includes('placeholder') &&
+      process.env.SENDGRID_API_KEY !== 'SG.OOO';
+
+    // Auto-verify in test env or when SendGrid is not configured (dev mode)
+    if (process.env.NODE_ENV === 'test' || !sendgridConfigured) {
       user!.verified = true;
       await user?.save();
     } else {
@@ -267,6 +272,18 @@ const sendResetPasswordEmail = async (
     new Date().getTime() + 60 * 60 * 1000,
   ); // Expires in an hour
   await user!.save();
+
+  const sendgridConfigured =
+    process.env.SENDGRID_API_KEY &&
+    !process.env.SENDGRID_API_KEY.includes('placeholder') &&
+    process.env.SENDGRID_API_KEY !== 'SG.OOO';
+
+  // If SendGrid is not configured, return the reset link directly in the response (dev mode)
+  if (!sendgridConfigured) {
+    return res.status(StatusCode.CREATED).send({
+      message: `Reset link (SendGrid not configured — use this link directly): ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${token}`,
+    });
+  }
 
   // Send the email and return an appropriate response
   emailResetPasswordLink(lowercaseEmail, token)

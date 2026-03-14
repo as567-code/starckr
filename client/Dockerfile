@@ -1,7 +1,7 @@
 FROM node:19.6.0
 
-LABEL org.opencontainers.image.source=https://github.com/rosewang01/dockerize-boilerplate
-LABEL org.opencontainers.image.description="Boilerplate Client Side Container"
+LABEL org.opencontainers.image.source=https://github.com/adityaswaroop/aditya-app
+LABEL org.opencontainers.image.description="Aditya App Client Container"
 LABEL org.opencontainers.image.licenses=MIT
 
 WORKDIR /

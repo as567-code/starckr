@@ -4,7 +4,7 @@
 import 'dotenv/config';
 import SGmail, { MailDataRequired } from '@sendgrid/mail';
 
-const appName = 'Boilerplate'; // Replace with a relevant project name
+const appName = 'Aditya App';
 const senderName = 'Aditya App'; // Replace with a relevant project sender
 const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 

@@ -3,7 +3,7 @@ import tracer from 'dd-trace';
 const winston = require('winston');
 
 tracer.init({
-  service: 'service1',
+  service: 'aditya-app',
   env: process.env.DD_ENV,
   hostname: 'localhost',
   port: 4000,

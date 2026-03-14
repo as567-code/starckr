@@ -41,9 +41,8 @@ const createExpressApp = (sessionStore: MongoStore): express.Express => {
       origin: [
         FRONTEND_URL,
         'http://localhost:3000',
-        'hackboilerplate.com',
-        'https://hackboilerplate.com',
-        'http://hackboilerplate.com',
+        'https://aditya-app.com',
+        'http://aditya-app.com',
       ],
       credentials: true,
     }),

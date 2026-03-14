@@ -11,7 +11,7 @@ variable "github_repo_name" {
 }
 
 variable "hosted_zone_name" {
-  default     = "hackboilerplate.com"
+  default     = "aditya-app.com"
   type        = string
   description = "Domain name"
 }

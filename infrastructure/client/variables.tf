@@ -1,5 +1,5 @@
 variable "s3_bucket_name" {
-  default     = "hackboilerplate-frontend"
+  default     = "aditya-app-frontend"
   type        = string
   description = "Name of the S3 bucket"
 }
