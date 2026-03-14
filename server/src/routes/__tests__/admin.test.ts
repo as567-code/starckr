@@ -387,3 +387,225 @@ describe('testing admin routes', () => {
     });
   });
 });
+
+// ─── Role-guard tests ────────────────────────────────────────────────────────
+// Each `it` block starts with a clean DB (outer beforeEach clears collections),
+// so the agent has no valid session at the start of each test.
+
+const rgUserEmail = 'rg-user@gmail.com';
+const rgUserPassword = 'password123';
+const rgAdminEmail = 'rg-admin@gmail.com';
+const rgAdminPassword = 'password123';
+const rgSuperadminEmail = 'rg-superadmin@gmail.com';
+const rgSuperadminPassword = 'password123';
+const rgTargetEmail = 'rg-target@gmail.com';
+const rgTargetPassword = 'password123';
+
+describe('role-guard tests', () => {
+  describe('GET /api/admin/all — role guard', () => {
+    it('returns 401 when not authenticated', async () => {
+      const response = await agent.get('/api/admin/all').send();
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 401 when authenticated as user role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+        firstName: 'RG',
+        lastName: 'User',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+      });
+      const response = await agent.get('/api/admin/all').send();
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 200 when authenticated as admin role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+        firstName: 'RG',
+        lastName: 'Admin',
+      });
+      await agent.put('/api/admin/autopromote').send({
+        email: rgAdminEmail,
+        role: 'admin',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+      });
+      const response = await agent.get('/api/admin/all').send();
+      expect(response.status).toBe(StatusCode.OK);
+    });
+
+    it('returns 200 when authenticated as superadmin role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgSuperadminEmail,
+        password: rgSuperadminPassword,
+        firstName: 'RG',
+        lastName: 'Superadmin',
+      });
+      await agent.put('/api/admin/autopromote').send({
+        email: rgSuperadminEmail,
+        role: 'superadmin',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgSuperadminEmail,
+        password: rgSuperadminPassword,
+      });
+      const response = await agent.get('/api/admin/all').send();
+      expect(response.status).toBe(StatusCode.OK);
+    });
+  });
+
+  describe('DELETE /api/admin/:email — role guard', () => {
+    it('returns 401 when not authenticated', async () => {
+      // isAuthenticated runs before the controller, so missing session → 401
+      // regardless of whether the target user exists
+      const response = await agent
+        .delete(`/api/admin/${rgTargetEmail}`)
+        .send();
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 401 when authenticated as user role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+        firstName: 'RG',
+        lastName: 'User',
+      });
+      await agent.post('/api/auth/register').send({
+        email: rgTargetEmail,
+        password: rgTargetPassword,
+        firstName: 'RG',
+        lastName: 'Target',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+      });
+      const response = await agent
+        .delete(`/api/admin/${rgTargetEmail}`)
+        .send();
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 200 when authenticated as admin role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+        firstName: 'RG',
+        lastName: 'Admin',
+      });
+      await agent.post('/api/auth/register').send({
+        email: rgTargetEmail,
+        password: rgTargetPassword,
+        firstName: 'RG',
+        lastName: 'Target',
+      });
+      await agent.put('/api/admin/autopromote').send({
+        email: rgAdminEmail,
+        role: 'admin',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+      });
+      const response = await agent
+        .delete(`/api/admin/${rgTargetEmail}`)
+        .send();
+      expect(response.status).toBe(StatusCode.OK);
+    });
+  });
+
+  describe('PUT /api/admin/promote — role guard', () => {
+    it('returns 401 when not authenticated', async () => {
+      const response = await agent
+        .put('/api/admin/promote')
+        .send({ email: rgTargetEmail, role: 'admin' });
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 401 when authenticated as user role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+        firstName: 'RG',
+        lastName: 'User',
+      });
+      await agent.post('/api/auth/register').send({
+        email: rgTargetEmail,
+        password: rgTargetPassword,
+        firstName: 'RG',
+        lastName: 'Target',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgUserEmail,
+        password: rgUserPassword,
+      });
+      const response = await agent
+        .put('/api/admin/promote')
+        .send({ email: rgTargetEmail, role: 'admin' });
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+
+    it('returns 400 for invalid role value', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+        firstName: 'RG',
+        lastName: 'Admin',
+      });
+      await agent.post('/api/auth/register').send({
+        email: rgTargetEmail,
+        password: rgTargetPassword,
+        firstName: 'RG',
+        lastName: 'Target',
+      });
+      await agent.put('/api/admin/autopromote').send({
+        email: rgAdminEmail,
+        role: 'admin',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+      });
+      const response = await agent
+        .put('/api/admin/promote')
+        .send({ email: rgTargetEmail, role: 'invalidrole' });
+      expect(response.status).toBe(StatusCode.BAD_REQUEST);
+    });
+
+    it('returns 200 when authenticated as admin role with valid role', async () => {
+      await agent.post('/api/auth/register').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+        firstName: 'RG',
+        lastName: 'Admin',
+      });
+      await agent.post('/api/auth/register').send({
+        email: rgTargetEmail,
+        password: rgTargetPassword,
+        firstName: 'RG',
+        lastName: 'Target',
+      });
+      await agent.put('/api/admin/autopromote').send({
+        email: rgAdminEmail,
+        role: 'admin',
+      });
+      await agent.post('/api/auth/login').send({
+        email: rgAdminEmail,
+        password: rgAdminPassword,
+      });
+      const response = await agent
+        .put('/api/admin/promote')
+        .send({ email: rgTargetEmail, role: 'admin' });
+      expect(response.status).toBe(StatusCode.OK);
+    });
+  });
+});
