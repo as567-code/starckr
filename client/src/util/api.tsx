@@ -42,7 +42,7 @@ async function resolve(promise: Promise<any>) {
  * To UPDATE DURING DEPLOYMENT USING ENVIRONMENT VARIABLES
  */
 const BACKEND_URL =
-  process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
+  import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 const URLPREFIX = `${BACKEND_URL}/api`;
 
 /**
