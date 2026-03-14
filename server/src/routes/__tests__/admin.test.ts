@@ -15,7 +15,7 @@ let dbConnection: MongoConnection;
 let sessionStore: MongoStore;
 let app: express.Express;
 let server: Server;
-let agent: request.SuperAgentTest;
+let agent: ReturnType<typeof request.agent>;
 
 const cleanMongoObjArr = (objArr: any[]): any => {
   const dup = objArr.map((obj) => {
