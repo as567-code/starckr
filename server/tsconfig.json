@@ -2,8 +2,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "target": "ES6",
-    "lib": ["es2021", "DOM"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
     "module": "commonjs",
     "moduleResolution": "Node",
     "strict": true,
