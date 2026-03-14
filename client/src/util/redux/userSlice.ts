@@ -6,24 +6,25 @@ export interface UserState {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
-  admin: boolean | null;
+  roles: string[] | null;
 }
 
 interface Payload {
   email: string;
   firstName: string;
   lastName: string;
-  admin: boolean;
+  roles: string[];
 }
 
 const initialState = {
   email: null,
   firstName: null,
   lastName: null,
+  roles: null,
 } as UserState;
 
 /**
- * A slice of the redux store that contains the user's information. This slice defines reducer for logging in a user, logging out a user, and promoting a user to admin.
+ * A slice of the redux store that contains the user's information. This slice defines reducers for logging in a user and logging out a user.
  */
 const userSlice = createSlice({
   name: 'user',
@@ -33,21 +34,18 @@ const userSlice = createSlice({
       state.email = action.payload.email;
       state.firstName = action.payload.firstName;
       state.lastName = action.payload.lastName;
-      state.admin = action.payload.admin;
-    },
-    toggleAdmin: (state) => {
-      state.admin = !state.admin;
+      state.roles = action.payload.roles;
     },
     logout: (state) => {
       state.email = null;
       state.firstName = null;
       state.lastName = null;
-      state.admin = null;
+      state.roles = null;
     },
   },
 });
 
-export const { login, logout, toggleAdmin } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;
 
 /**

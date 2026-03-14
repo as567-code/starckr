@@ -31,7 +31,7 @@ function UserTable() {
     { id: 'first', label: 'First Name' },
     { id: 'last', label: 'Last Name' },
     { id: 'email', label: 'Email' },
-    { id: 'promote', label: 'Promote to Admin' },
+    { id: 'promote', label: 'Assign Role' },
     { id: 'remove', label: 'Remove User' },
   ];
 
@@ -65,7 +65,7 @@ function UserTable() {
     );
   }, [users, self]);
 
-  // update state of userlist to remove a user from  the frontend representation of the data
+  // update state of userlist to remove a user from the frontend representation of the data
   const removeUser = (user: IUser) => {
     setUserList(
       userList.filter(
@@ -73,16 +73,15 @@ function UserTable() {
       ),
     );
   };
-  // update state of userlist to promote a user on the frontend representation
-  const updateAdmin = (email: string) => {
+
+  // update state of userlist to reflect a new role assignment on the frontend
+  const updateUserRole = (userId: string, role: string) => {
     setUserList(
       userList.map((entry) => {
-        if (entry.email !== email) {
+        if (entry._id !== userId) {
           return entry;
         }
-        const newEntry = entry;
-        newEntry.admin = true;
-        return newEntry;
+        return { ...entry, roles: [role] };
       }),
     );
   };
@@ -95,20 +94,24 @@ function UserTable() {
       </div>
     );
   }
+
+  const isAdminRole = (roles?: string[]) =>
+    !!(roles?.includes('admin') || roles?.includes('superadmin'));
+
   return (
     <PaginationTable
       rows={userList.map((user: IUser) =>
         createAdminDashboardRow(
           user,
+          <PromoteUserButton
+            userId={user._id}
+            currentRole={user.roles?.[0] ?? 'user'}
+            onSuccess={(newRole) => updateUserRole(user._id, newRole)}
+          />,
           <DeleteUserButton
-            admin={user.admin}
+            admin={isAdminRole(user.roles)}
             email={user.email}
             removeRow={() => removeUser(user)}
-          />,
-          <PromoteUserButton
-            admin={user.admin}
-            email={user.email}
-            updateAdmin={updateAdmin}
           />,
         ),
       )}
