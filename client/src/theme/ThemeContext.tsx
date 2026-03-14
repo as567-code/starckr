@@ -19,7 +19,8 @@ export const useThemeContext = () => useContext(ThemeContext);
 
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const [colorMode, setColorMode] = useState<ColorMode>(() => {
-    return (localStorage.getItem('colorMode') as ColorMode) ?? 'dark';
+    const stored = localStorage.getItem('colorMode');
+    return stored === 'dark' || stored === 'light' ? stored : 'dark';
   });
 
   useEffect(() => {
