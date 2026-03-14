@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "aditya-app-server",
   "version": "1.0.0",
   "exports": "./index.js",
   "license": "MIT",
