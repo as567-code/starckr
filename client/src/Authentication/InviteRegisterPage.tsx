@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link, TextField, Grid, Typography } from '@mui/material';
 import { useNavigate, Link as RouterLink, useParams } from 'react-router-dom';
-import FormCol from '../components/form/FormCol.tsx';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { motion } from 'framer-motion';
 import {
   emailRegex,
   InputErrorMessage,
@@ -10,10 +13,7 @@ import {
 } from '../util/inputvalidation.ts';
 import { registerInvite } from './api.ts';
 import AlertDialog from '../components/AlertDialog.tsx';
-import PrimaryButton from '../components/buttons/PrimaryButton.tsx';
-import ScreenGrid from '../components/ScreenGrid.tsx';
-import FormRow from '../components/form/FormRow.tsx';
-import FormGrid from '../components/form/FormGrid.tsx';
+import { ThemeToggle } from '../components/ThemeToggle.tsx';
 import { useData } from '../util/api.tsx';
 
 /**
@@ -24,7 +24,6 @@ function InviteRegisterPage() {
   const { token } = useParams();
   const navigate = useNavigate();
 
-  // Default values for state
   const defaultValues = {
     firstName: '',
     lastName: '',
@@ -50,7 +49,6 @@ function InviteRegisterPage() {
   };
   type ValueType = keyof typeof values;
 
-  // State values and hooks
   const [values, setValueState] = useState(defaultValues);
   const [showError, setShowErrorState] = useState(defaultShowErrors);
   const [errorMessage, setErrorMessageState] = useState(defaultErrorMessages);
@@ -59,7 +57,6 @@ function InviteRegisterPage() {
   const [validToken, setValidToken] = useState(true);
   const [email, setEmail] = useState('');
 
-  // Helper functions for changing only one field in a state object
   const setValue = (field: string, value: string) => {
     setValueState((prevState) => ({
       ...prevState,
@@ -78,6 +75,7 @@ function InviteRegisterPage() {
       ...{ [field]: msg },
     }));
   };
+
   const invite = useData(`admin/invite/${token}`);
   useEffect(() => {
     if (!invite?.data && invite !== null) {
@@ -165,118 +163,172 @@ function InviteRegisterPage() {
     }
   }
 
-  const title = "Let's get started";
   if (!validToken) {
     return (
-      <ScreenGrid>
-        <Typography variant="h2">Invalid Invite Token</Typography>
-      </ScreenGrid>
+      <Box
+        sx={{
+          display: 'flex',
+          minHeight: '100vh',
+          justifyContent: 'center',
+          alignItems: 'center',
+          bgcolor: 'background.default',
+          p: 4,
+        }}
+      >
+        <Typography variant="h4" fontWeight={700}>
+          Invalid Invite Token
+        </Typography>
+      </Box>
     );
   }
+
   return (
-    <ScreenGrid>
-      <FormGrid>
-        <FormCol>
-          <Grid item container justifyContent="center">
-            <Typography variant="h2">{title}</Typography>
-          </Grid>
-          <Grid item width="1">
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Brand panel — hidden on mobile */}
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #0a0a0a 100%)',
+          p: 6,
+        }}
+      >
+        <Typography variant="h3" fontWeight={700} color="white">
+          Aditya App
+        </Typography>
+        <Typography
+          variant="body1"
+          color="grey.500"
+          mt={2}
+          textAlign="center"
+          maxWidth={320}
+        >
+          Your full-stack TypeScript starter — built for speed.
+        </Typography>
+      </Box>
+
+      {/* Form panel */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          p: 4,
+          position: 'relative',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <ThemeToggle />
+        </Box>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{ width: '100%', maxWidth: 440 }}
+        >
+          <Typography variant="h4" fontWeight={700} mb={1}>
+            You&apos;re invited
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mb={4}>
+            Complete your registration below.
+          </Typography>
+
+          <TextField
+            fullWidth
+            size="small"
+            type="text"
+            required
+            label="Email"
+            value={email}
+            disabled
+            sx={{ mb: 2 }}
+          />
+
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
             <TextField
               fullWidth
+              error={showError.firstName}
+              helperText={errorMessage.firstName}
               size="small"
               type="text"
               required
-              label="Email"
-              value={email}
-              disabled
+              label="First Name"
+              value={values.firstName}
+              onChange={(e) => setValue('firstName', e.target.value)}
             />
-          </Grid>
-          <FormRow>
-            <Grid item width=".5">
-              <TextField
-                fullWidth
-                error={showError.firstName}
-                helperText={errorMessage.firstName}
-                size="small"
-                type="text"
-                required
-                label="First Name"
-                value={values.firstName}
-                onChange={(e) => setValue('firstName', e.target.value)}
-              />
-            </Grid>
-            <Grid item width=".5">
-              <TextField
-                fullWidth
-                error={showError.lastName}
-                helperText={errorMessage.lastName}
-                size="small"
-                type="text"
-                required
-                label="Last Name"
-                value={values.lastName}
-                onChange={(e) => setValue('lastName', e.target.value)}
-              />
-            </Grid>
-          </FormRow>
-          <FormRow>
-            <Grid item width=".5">
-              <TextField
-                fullWidth
-                error={showError.password}
-                helperText={errorMessage.password}
-                size="small"
-                type="password"
-                required
-                label="Password"
-                value={values.password}
-                onChange={(e) => setValue('password', e.target.value)}
-              />
-            </Grid>
-            <Grid item container width=".5">
-              <TextField
-                fullWidth
-                error={showError.confirmPassword}
-                helperText={errorMessage.confirmPassword}
-                size="small"
-                type="password"
-                required
-                label=" Confirm Password"
-                value={values.confirmPassword}
-                onChange={(e) => setValue('confirmPassword', e.target.value)}
-              />
-            </Grid>
-          </FormRow>
-          <Grid item container justifyContent="center">
-            <PrimaryButton
+            <TextField
               fullWidth
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => handleSubmit()}
-            >
-              Register
-            </PrimaryButton>
-          </Grid>
-          <FormRow>
-            <Grid container justifyContent="center">
-              <Link component={RouterLink} to="../">
+              error={showError.lastName}
+              helperText={errorMessage.lastName}
+              size="small"
+              type="text"
+              required
+              label="Last Name"
+              value={values.lastName}
+              onChange={(e) => setValue('lastName', e.target.value)}
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              fullWidth
+              error={showError.password}
+              helperText={errorMessage.password}
+              size="small"
+              type="password"
+              required
+              label="Password"
+              value={values.password}
+              onChange={(e) => setValue('password', e.target.value)}
+            />
+            <TextField
+              fullWidth
+              error={showError.confirmPassword}
+              helperText={errorMessage.confirmPassword}
+              size="small"
+              type="password"
+              required
+              label="Confirm Password"
+              value={values.confirmPassword}
+              onChange={(e) => setValue('confirmPassword', e.target.value)}
+            />
+          </Box>
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={() => handleSubmit()}
+            sx={{ mt: 3, py: 1.5, fontWeight: 600 }}
+          >
+            Register
+          </Button>
+
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              <RouterLink to="/login" style={{ color: '#3b82f6' }}>
                 Back to Login
-              </Link>
-            </Grid>
-          </FormRow>
-        </FormCol>
-        {/* The alert that pops up */}
-        <Grid item>
-          <AlertDialog
-            showAlert={showError.alert}
-            title={alertTitle}
-            message={errorMessage.alert}
-            onClose={handleAlertClose}
-          />
-        </Grid>
-      </FormGrid>
-    </ScreenGrid>
+              </RouterLink>
+            </Typography>
+          </Box>
+        </motion.div>
+      </Box>
+
+      <AlertDialog
+        showAlert={showError.alert}
+        title={alertTitle}
+        message={errorMessage.alert}
+        onClose={handleAlertClose}
+      />
+    </Box>
   );
 }
 

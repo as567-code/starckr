@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { TextField, Link, Typography, Grid } from '@mui/material';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { motion } from 'framer-motion';
 import { resetPassword } from './api.ts';
-import FormGrid from '../components/form/FormGrid.tsx';
 import { InputErrorMessage, passwordRegex } from '../util/inputvalidation.ts';
 import AlertDialog from '../components/AlertDialog.tsx';
-import PrimaryButton from '../components/buttons/PrimaryButton.tsx';
-import ScreenGrid from '../components/ScreenGrid.tsx';
-import FormCol from '../components/form/FormCol.tsx';
+import { ThemeToggle } from '../components/ThemeToggle.tsx';
 
 /**
  * A page that allows users to reset their password by inputting a new password
@@ -17,7 +18,6 @@ function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
 
-  // Default values for state
   const defaultValues = {
     password: '',
     confirmPassword: '',
@@ -34,12 +34,10 @@ function ResetPasswordPage() {
   };
   type ValueType = keyof typeof values;
 
-  // State values and hooks
   const [values, setValueState] = useState(defaultValues);
   const [showError, setShowErrorState] = useState(defaultShowErrors);
   const [errorMessage, setErrorMessageState] = useState(defaultErrorMessages);
 
-  // Helper functions for changing only one field in a state object
   const setValue = (field: string, value: string) => {
     setValueState((prevState) => ({
       ...prevState,
@@ -110,62 +108,83 @@ function ResetPasswordPage() {
   }
 
   return (
-    <ScreenGrid>
-      <FormGrid>
-        <FormCol>
-          <Grid item container justifyContent="center">
-            <Typography variant="h2">Excited to have you back!</Typography>
-          </Grid>
-          <Grid item width="1">
-            <TextField
-              fullWidth
-              error={showError.password}
-              helperText={errorMessage.password}
-              type="password"
-              required
-              label="New Password"
-              value={values.password}
-              onChange={(e) => setValue('password', e.target.value)}
-            />
-          </Grid>
-          <Grid item width="1">
-            <TextField
-              fullWidth
-              error={showError.confirmPassword}
-              helperText={errorMessage.confirmPassword}
-              type="password"
-              required
-              label="Confirm Password"
-              value={values.confirmPassword}
-              onChange={(e) => setValue('confirmPassword', e.target.value)}
-            />
-          </Grid>
-          <Grid item width="1">
-            <PrimaryButton
-              fullWidth
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => handleSubmit()}
-            >
-              Reset Password
-            </PrimaryButton>
-          </Grid>
-          <Grid item container justifyContent="center">
-            <Link component={RouterLink} to="/login">
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: 'background.default',
+        position: 'relative',
+        p: 4,
+      }}
+    >
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <ThemeToggle />
+      </Box>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ width: '100%', maxWidth: 400 }}
+      >
+        <Typography variant="h4" fontWeight={700} mb={1}>
+          Set new password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={4}>
+          Choose a strong password for your account.
+        </Typography>
+
+        <TextField
+          fullWidth
+          error={showError.password}
+          helperText={errorMessage.password}
+          type="password"
+          required
+          label="New Password"
+          value={values.password}
+          onChange={(e) => setValue('password', e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          fullWidth
+          error={showError.confirmPassword}
+          helperText={errorMessage.confirmPassword}
+          type="password"
+          required
+          label="Confirm Password"
+          value={values.confirmPassword}
+          onChange={(e) => setValue('confirmPassword', e.target.value)}
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={() => handleSubmit()}
+          sx={{ mt: 3, py: 1.5, fontWeight: 600 }}
+        >
+          Reset Password
+        </Button>
+
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            <RouterLink to="/login" style={{ color: '#3b82f6' }}>
               Back to Login
-            </Link>
-          </Grid>
-        </FormCol>
-      </FormGrid>
-      {/* The alert that pops up */}
+            </RouterLink>
+          </Typography>
+        </Box>
+      </motion.div>
+
       <AlertDialog
         showAlert={showError.alert}
         title={alertTitle}
         message={errorMessage.alert}
         onClose={handleAlertClose}
       />
-    </ScreenGrid>
+    </Box>
   );
 }
 

@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { TextField, Typography, Link, Grid } from '@mui/material';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { motion } from 'framer-motion';
 import { sendResetPasswordEmail } from './api.ts';
 import AlertDialog from '../components/AlertDialog.tsx';
-import FormGrid from '../components/form/FormGrid.tsx';
 import { emailRegex, InputErrorMessage } from '../util/inputvalidation.ts';
-import PrimaryButton from '../components/buttons/PrimaryButton.tsx';
-import ScreenGrid from '../components/ScreenGrid.tsx';
-import FormCol from '../components/form/FormCol.tsx';
+import { ThemeToggle } from '../components/ThemeToggle.tsx';
 
 /**
  * A page allowing users to input their email so a reset password link can be
  * sent to them
  */
 function EmailResetPasswordPage() {
-  // Default values for state
   const defaultShowErrors = {
     email: false,
     alert: false,
@@ -24,13 +24,11 @@ function EmailResetPasswordPage() {
     alert: '',
   };
 
-  // State values and hooks
   const [email, setEmail] = useState('');
   const [showError, setShowErrorState] = useState(defaultShowErrors);
   const [errorMessage, setErrorMessageState] = useState(defaultErrorMessages);
   const navigate = useNavigate();
 
-  // Helper functions for changing only one field in a state object
   const setErrorMessage = (field: string, msg: string) => {
     setErrorMessageState((prevState) => ({
       ...prevState,
@@ -80,54 +78,75 @@ function EmailResetPasswordPage() {
     }
   };
 
-  const title = "Let's get you back";
   return (
-    <ScreenGrid>
-      <FormGrid>
-        <FormCol>
-          <Grid item container justifyContent="center">
-            <Typography variant="h2">{title}</Typography>
-          </Grid>
-          <Grid item width="1">
-            <TextField
-              fullWidth
-              value={email}
-              error={showError.email}
-              helperText={errorMessage.email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="Email"
-              label="Email"
-              required
-              placeholder="Email Address"
-            />
-          </Grid>
-          <Grid item container justifyContent="center">
-            <PrimaryButton
-              fullWidth
-              type="submit"
-              variant="contained"
-              onClick={() => handleSubmit()}
-            >
-              Send Reset Link
-            </PrimaryButton>
-          </Grid>
-          <Grid item container justifyContent="center">
-            <Link component={RouterLink} to="../">
-              Back to Login
-            </Link>
-          </Grid>
-        </FormCol>
-      </FormGrid>
-      {/* The alert that pops up */}
-      <Grid item>
-        <AlertDialog
-          showAlert={showError.alert}
-          title={alertTitle}
-          message={errorMessage.alert}
-          onClose={handleAlertClose}
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: 'background.default',
+        position: 'relative',
+        p: 4,
+      }}
+    >
+      <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <ThemeToggle />
+      </Box>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ width: '100%', maxWidth: 400 }}
+      >
+        <Typography variant="h4" fontWeight={700} mb={1}>
+          Reset your password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={4}>
+          Enter your email and we&apos;ll send you a reset link.
+        </Typography>
+
+        <TextField
+          fullWidth
+          value={email}
+          error={showError.email}
+          helperText={errorMessage.email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+          label="Email"
+          required
+          placeholder="Email Address"
+          sx={{ mb: 2 }}
         />
-      </Grid>
-    </ScreenGrid>
+
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={() => handleSubmit()}
+          sx={{ py: 1.5, fontWeight: 600 }}
+        >
+          Send Reset Link
+        </Button>
+
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            <RouterLink to="/" style={{ color: '#3b82f6' }}>
+              Back to Login
+            </RouterLink>
+          </Typography>
+        </Box>
+      </motion.div>
+
+      <AlertDialog
+        showAlert={showError.alert}
+        title={alertTitle}
+        message={errorMessage.alert}
+        onClose={handleAlertClose}
+      />
+    </Box>
   );
 }
 

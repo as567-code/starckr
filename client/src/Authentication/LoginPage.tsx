@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { TextField, Link, Typography, Grid } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { motion } from 'framer-motion';
 import { useAppDispatch } from '../util/redux/hooks.ts';
 import { login as loginRedux } from '../util/redux/userSlice.ts';
-import FormGrid from '../components/form/FormGrid.tsx';
-import FormCol from '../components/form/FormCol.tsx';
-import FormRow from '../components/form/FormRow.tsx';
 import { emailRegex, InputErrorMessage } from '../util/inputvalidation.ts';
 import { loginUser } from './api.ts';
 import AlertDialog from '../components/AlertDialog.tsx';
-import PrimaryButton from '../components/buttons/PrimaryButton.tsx';
-import ScreenGrid from '../components/ScreenGrid.tsx';
+import { ThemeToggle } from '../components/ThemeToggle.tsx';
 
 /**
  * A page allowing users to input their email and password to login. The default
@@ -19,7 +19,6 @@ import ScreenGrid from '../components/ScreenGrid.tsx';
 function LoginPage() {
   const navigate = useNavigate();
 
-  // Default values for state
   const defaultValues = {
     email: '',
     password: '',
@@ -36,12 +35,10 @@ function LoginPage() {
   };
   type ValueType = keyof typeof values;
 
-  // State values and hooks
   const [values, setValueState] = useState(defaultValues);
   const [showError, setShowErrorState] = useState(defaultShowErrors);
   const [errorMessage, setErrorMessageState] = useState(defaultErrorMessages);
 
-  // Helper functions for changing only one field in a state object
   const setValue = (field: string, value: string) => {
     setValueState((prevState) => ({
       ...prevState,
@@ -113,7 +110,6 @@ function LoginPage() {
     if (validateInputs()) {
       loginUser(values.email, values.password)
         .then((user) => {
-          console.log('navigating to home!');
           dispatchUser(
             user.email!,
             user.firstName!,
@@ -123,7 +119,6 @@ function LoginPage() {
           navigate('/home');
         })
         .catch((e) => {
-          console.log('failed to login...');
           setShowError('alert', true);
           setErrorMessage('alert', e.message);
         });
@@ -131,72 +126,119 @@ function LoginPage() {
   }
 
   return (
-    <ScreenGrid>
-      <FormGrid>
-        <FormCol>
-          <Grid item container justifyContent="center">
-            <Typography variant="h2" textAlign="center">
-              Welcome to Boilerplate
-            </Typography>
-          </Grid>
-          <Grid item width="1">
-            <TextField
-              fullWidth
-              error={showError.email}
-              helperText={errorMessage.email}
-              type="email"
-              required
-              label="Email"
-              value={values.email}
-              onChange={(e) => setValue('email', e.target.value)}
-            />
-          </Grid>
-          <Grid item width="1">
-            <TextField
-              fullWidth
-              error={showError.password}
-              helperText={errorMessage.password}
-              type="password"
-              required
-              label="Password"
-              value={values.password}
-              onChange={(e) => setValue('password', e.target.value)}
-            />
-          </Grid>
-          <Grid item container justifyContent="center">
-            <PrimaryButton
-              fullWidth
-              type="submit"
-              variant="contained"
-              onClick={() => handleSubmit()}
-            >
-              Login
-            </PrimaryButton>
-          </Grid>
-          <FormRow>
-            <Grid item>
-              <Link component={RouterLink} to="/email-reset">
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      {/* Brand panel — hidden on mobile */}
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #1e1b4b 0%, #0a0a0a 100%)',
+          p: 6,
+        }}
+      >
+        <Typography variant="h3" fontWeight={700} color="white">
+          Aditya App
+        </Typography>
+        <Typography
+          variant="body1"
+          color="grey.500"
+          mt={2}
+          textAlign="center"
+          maxWidth={320}
+        >
+          Your full-stack TypeScript starter — built for speed.
+        </Typography>
+      </Box>
+
+      {/* Form panel */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          p: 4,
+          position: 'relative',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <ThemeToggle />
+        </Box>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{ width: '100%', maxWidth: 400 }}
+        >
+          <Typography variant="h4" fontWeight={700} mb={1}>
+            Welcome back
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mb={4}>
+            Sign in to your account
+          </Typography>
+
+          <TextField
+            fullWidth
+            error={showError.email}
+            helperText={errorMessage.email}
+            type="email"
+            required
+            label="Email"
+            value={values.email}
+            onChange={(e) => setValue('email', e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            fullWidth
+            error={showError.password}
+            helperText={errorMessage.password}
+            type="password"
+            required
+            label="Password"
+            value={values.password}
+            onChange={(e) => setValue('password', e.target.value)}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={() => handleSubmit()}
+            sx={{ mt: 3, py: 1.5, fontWeight: 600 }}
+          >
+            Sign in
+          </Button>
+
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              <RouterLink to="/email-reset" style={{ color: 'inherit' }}>
                 Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link component={RouterLink} to="/register">
-                Sign up
-              </Link>
-            </Grid>
-          </FormRow>
-        </FormCol>
-      </FormGrid>
-      {/* The alert that pops up */}
-      <Grid item>
-        <AlertDialog
-          showAlert={showError.alert}
-          title={alertTitle}
-          message={errorMessage.alert}
-          onClose={handleAlertClose}
-        />
-      </Grid>
-    </ScreenGrid>
+              </RouterLink>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              No account?{' '}
+              <RouterLink to="/register" style={{ color: '#3b82f6' }}>
+                Create one
+              </RouterLink>
+            </Typography>
+          </Box>
+        </motion.div>
+      </Box>
+
+      <AlertDialog
+        showAlert={showError.alert}
+        title={alertTitle}
+        message={errorMessage.alert}
+        onClose={handleAlertClose}
+      />
+    </Box>
   );
 }
 
