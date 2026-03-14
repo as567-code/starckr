@@ -228,4 +228,84 @@ describe('testing authentication routes', () => {
       expect(await Session.countDocuments()).toBe(1);
     });
   });
+
+  describe('auth edge case tests', () => {
+    it('returns 400 for duplicate email registration', async () => {
+      // Register first user
+      let response = await agent.post('/api/auth/register').send({
+        email: testEmail,
+        password: testPassword,
+        firstName: testFirstName,
+        lastName: testLastName,
+      });
+      expect(response.status).toBe(StatusCode.CREATED);
+
+      // Attempt to register with the same email
+      response = await agent.post('/api/auth/register').send({
+        email: testEmail,
+        password: 'anotherPassword123',
+        firstName: testFirstName,
+        lastName: testLastName,
+      });
+      expect(response.status).toBe(StatusCode.BAD_REQUEST);
+      expect(await User.countDocuments({ email: testEmail })).toBe(1);
+    });
+
+    it('returns 401 for incorrect password', async () => {
+      // Register a user
+      let response = await agent.post('/api/auth/register').send({
+        email: testEmail,
+        password: testPassword,
+        firstName: testFirstName,
+        lastName: testLastName,
+      });
+      expect(response.status).toBe(StatusCode.CREATED);
+
+      // Attempt login with wrong password
+      response = await agent.post('/api/auth/login').send({
+        email: testEmail,
+        password: 'wrongPassword123',
+      });
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+      expect(await Session.countDocuments()).toBe(0);
+    });
+
+    it('returns 401 when account is not verified', async () => {
+      // Register a user (auto-verified in test env)
+      let response = await agent.post('/api/auth/register').send({
+        email: testEmail,
+        password: testPassword,
+        firstName: testFirstName,
+        lastName: testLastName,
+      });
+      expect(response.status).toBe(StatusCode.CREATED);
+
+      // Manually mark the user as unverified to simulate a real-world scenario
+      await User.findOneAndUpdate({ email: testEmail }, { verified: false });
+
+      // Attempt to login — should be rejected because account is unverified
+      response = await agent.post('/api/auth/login').send({
+        email: testEmail,
+        password: testPassword,
+      });
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+      expect(await Session.countDocuments()).toBe(0);
+    });
+
+    it('returns 401 for non-existent email', async () => {
+      // Attempt to login with an email that was never registered
+      const response = await agent.post('/api/auth/login').send({
+        email: 'doesnotexist@example.com',
+        password: testPassword,
+      });
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+      expect(await Session.countDocuments()).toBe(0);
+    });
+
+    it('returns 401 when accessing authenticated route without session', async () => {
+      // Hit /api/auth/authstatus without logging in first
+      const response = await agent.get('/api/auth/authstatus');
+      expect(response.status).toBe(StatusCode.UNAUTHORIZED);
+    });
+  });
 });

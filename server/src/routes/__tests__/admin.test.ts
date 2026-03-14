@@ -35,7 +35,7 @@ const user1 = {
   email: testEmail,
   firstName: testFirstName,
   lastName: testLastName,
-  admin: true,
+  roles: ['admin'],
   verified: true,
 };
 
@@ -47,7 +47,7 @@ const user2 = {
   email: testEmail2,
   firstName: testFirstName2,
   lastName: testLastName2,
-  admin: false,
+  roles: ['user'],
   verified: true,
 };
 
@@ -59,7 +59,7 @@ const user3 = {
   email: testEmail3,
   firstName: testFirstName3,
   lastName: testLastName3,
-  admin: true,
+  roles: ['admin'],
   verified: true,
 };
 
@@ -71,7 +71,7 @@ const user4 = {
   email: testEmail4,
   firstName: testFirstName4,
   lastName: testLastName4,
-  admin: false,
+  roles: ['user'],
   verified: true,
 };
 
@@ -152,6 +152,7 @@ describe('testing admin routes', () => {
       // Promote user3 to admin
       response = await agent.put('/api/admin/autopromote').send({
         email: testEmail3,
+        role: 'admin',
       });
       expect(response.status).toBe(StatusCode.OK);
       const admin3 = await User.findOne({ email: testEmail3 });
@@ -174,6 +175,7 @@ describe('testing admin routes', () => {
       // Promote user to admin
       response = await agent.put('/api/admin/autopromote').send({
         email: testEmail,
+        role: 'admin',
       });
       expect(response.status).toBe(StatusCode.OK);
       const admin = await User.findOne({ email: testEmail });
@@ -206,7 +208,7 @@ describe('testing admin routes', () => {
         // promote user
         const response = await agent
           .put('/api/admin/promote')
-          .send({ email: testEmail2 });
+          .send({ email: testEmail2, role: 'admin' });
         expect(response.status).toBe(StatusCode.OK);
         const newAdmin = await User.findOne({ email: testEmail2 });
         expect(newAdmin).toBeTruthy();
@@ -217,7 +219,7 @@ describe('testing admin routes', () => {
         // promote user
         const response = await agent
           .put('/api/admin/promote')
-          .send({ email: 'emaildoesnotexist@gmail.com' });
+          .send({ email: 'emaildoesnotexist@gmail.com', role: 'admin' });
         expect(response.status).toBe(StatusCode.NOT_FOUND);
       });
 
