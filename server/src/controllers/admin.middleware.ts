@@ -6,28 +6,48 @@ import ApiError from '../util/apiError.ts';
 import { IUser } from '../models/user.model.ts';
 
 /**
- * Middleware to check if a user is an admin using Passport Strategy
- * and creates an {@link ApiError} to pass on to error handlers if not
+ * Middleware to check if a user has the admin or superadmin role.
+ * Creates an {@link ApiError} to pass on to error handlers if not.
  */
 const isAdmin = (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  // Get User
   const user: IUser | null = req.user as IUser;
-  // Check is user exists and is valid
   if (!user) {
-    next(ApiError.unauthorized('Not a valid user.')); // TODO: see if this is the correct message
+    next(ApiError.unauthorized('Not a valid user.'));
     return;
   }
-  // Check if the user is an admin
-  if (user.admin) {
+  if (user.roles?.includes('admin') || user.roles?.includes('superadmin')) {
     next();
   } else {
     next(ApiError.unauthorized('Need admin status.'));
   }
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export { isAdmin };
+/**
+ * Middleware factory that checks if a user has ANY of the provided roles.
+ * Creates an {@link ApiError} to pass on to error handlers if not.
+ */
+const hasRole =
+  (...roles: string[]) =>
+  (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const user: IUser | null = req.user as IUser;
+    if (!user) {
+      next(ApiError.unauthorized('Not a valid user.'));
+      return;
+    }
+    const hasAny = roles.some((r) => user.roles?.includes(r));
+    if (hasAny) {
+      next();
+    } else {
+      next(ApiError.unauthorized('Insufficient role.'));
+    }
+  };
+
+export { isAdmin, hasRole };

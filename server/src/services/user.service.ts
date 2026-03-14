@@ -41,7 +41,6 @@ const createUser = async (
     lastName,
     email,
     password: hashedPassword,
-    admin: false,
   });
   const user = await newUser.save();
   return user;
@@ -120,14 +119,13 @@ const getAllUsersFromDB = async () => {
 };
 
 /**
- * A function that upgrades a certain user to an admin.
- * @param id The id of the user to upgrade.
- * @returns The upgraded {@link User}
+ * A function that sets a user's roles to the specified role.
+ * @param id The id of the user to update.
+ * @param role The role to assign (defaults to 'admin').
+ * @returns The updated {@link User}
  */
-const upgradeUserToAdmin = async (id: string) => {
-  const user = await User.findByIdAndUpdate(id, [
-    { $set: { admin: { $eq: [false, '$admin'] } } },
-  ]).exec();
+const upgradeUserToAdmin = async (id: string, role = 'admin') => {
+  const user = await User.findByIdAndUpdate(id, { roles: [role] }).exec();
   return user;
 };
 

@@ -43,10 +43,9 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  admin: {
-    type: Boolean,
-    required: true,
-    default: false,
+  roles: {
+    type: [String],
+    default: ['user'],
   },
 });
 
@@ -60,7 +59,7 @@ interface IUser extends mongoose.Document {
   verificationToken: string | null | undefined;
   resetPasswordToken: string | null | undefined;
   resetPasswordTokenExpiryDate: Date | null | undefined;
-  admin: boolean;
+  roles: string[];
 }
 
 const User = mongoose.model<IUser>('User', UserSchema);

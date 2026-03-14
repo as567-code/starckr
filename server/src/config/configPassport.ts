@@ -13,7 +13,7 @@ interface IUserWithPassword {
   email: string;
   password?: string;
   verified: boolean;
-  admin: boolean;
+  roles: string[];
 }
 
 /**

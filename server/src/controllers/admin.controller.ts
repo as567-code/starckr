@@ -43,7 +43,7 @@ const getAllUsers = async (
 };
 
 /**
- * Upgrade a user to an admin. The email of the user is expected to be in the request body.
+ * Assign a role to a user. Expects `email` and `role` in the request body.
  * Upon success, return 200 OK status code.
  */
 const upgradePrivilege = async (
@@ -51,9 +51,19 @@ const upgradePrivilege = async (
   res: express.Response,
   next: express.NextFunction,
 ) => {
-  const { email } = req.body;
+  const { email, role } = req.body;
+  const validRoles = ['user', 'moderator', 'admin', 'superadmin'];
+
   if (!email) {
     next(ApiError.missingFields(['email']));
+    return;
+  }
+  if (!role || !validRoles.includes(role)) {
+    next(
+      ApiError.badRequest(
+        'Invalid role. Must be one of: user, moderator, admin, superadmin',
+      ),
+    );
     return;
   }
 
@@ -62,18 +72,14 @@ const upgradePrivilege = async (
     next(ApiError.notFound(`User with email ${email} does not exist`));
     return;
   }
-  if (user.admin) {
-    next(ApiError.badRequest(`User is already an admin`));
-    return;
-  }
 
-  upgradeUserToAdmin(user._id)
+  upgradeUserToAdmin(user._id, role)
     .then(() => {
       res.sendStatus(StatusCode.OK);
     })
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .catch((e) => {
-      next(ApiError.internal('Unable to upgrade user to admin.'));
+      next(ApiError.internal('Unable to update user role.'));
     });
 };
 
@@ -103,7 +109,10 @@ const deleteUser = async (
     next(ApiError.badRequest('Cannot delete self.'));
     return;
   }
-  if (user.admin) {
+  if (
+    user.roles?.includes('admin') ||
+    user.roles?.includes('superadmin')
+  ) {
     next(ApiError.forbidden('Cannot delete an admin.'));
     return;
   }

@@ -156,7 +156,7 @@ describe('testing admin routes', () => {
       expect(response.status).toBe(StatusCode.OK);
       const admin3 = await User.findOne({ email: testEmail3 });
       expect(admin3).toBeTruthy();
-      expect(admin3!.admin).toBeTruthy();
+      expect(admin3!.roles).toContain('admin');
 
       // Logout user3
       response = await agent.post('/api/auth/logout');
@@ -178,7 +178,7 @@ describe('testing admin routes', () => {
       expect(response.status).toBe(StatusCode.OK);
       const admin = await User.findOne({ email: testEmail });
       expect(admin).toBeTruthy();
-      expect(admin!.admin).toBeTruthy();
+      expect(admin!.roles).toContain('admin');
     });
 
     describe('testing GET /api/admin/users', () => {
@@ -210,7 +210,7 @@ describe('testing admin routes', () => {
         expect(response.status).toBe(StatusCode.OK);
         const newAdmin = await User.findOne({ email: testEmail2 });
         expect(newAdmin).toBeTruthy();
-        expect(newAdmin!.admin).toBeTruthy();
+        expect(newAdmin!.roles).toContain('admin');
       });
 
       it('admin promoting non-existant user throws error', async () => {

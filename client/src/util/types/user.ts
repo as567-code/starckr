@@ -6,7 +6,7 @@ interface IUser {
   firstName: string;
   lastName: string;
   email: string;
-  admin: boolean;
+  roles: string[];
 }
 
 export default IUser;
