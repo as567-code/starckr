@@ -122,7 +122,7 @@ data "aws_subnets" "default" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "aditya-app.com"
+  domain_name       = "stackr.com"
   validation_method = "DNS"
 
   lifecycle {
@@ -228,7 +228,7 @@ resource "aws_lb_listener_rule" "frontend" {
 
   condition {
     host_header {
-      values = ["aditya-app.com"]
+      values = ["stackr.com"]
     }
   }
 }
@@ -260,7 +260,7 @@ resource "aws_lb_listener_rule" "backend" {
 
 #   condition {
 #     host_header {
-#       values = ["aditya-app.com"]
+#       values = ["stackr.com"]
 #     }
 #   }
 # }
@@ -342,7 +342,7 @@ resource "aws_route53_zone" "main" {
 
 resource "aws_route53_record" "main" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "aditya-app.com"
+  name    = "stackr.com"
   type    = "A"
 
   alias {

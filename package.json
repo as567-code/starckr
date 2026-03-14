@@ -1,7 +1,7 @@
 {
-  "name": "aditya-app",
+  "name": "stackr",
   "version": "1.0.0",
-  "repository": "https://github.com/adityaswaroop/aditya-app.git",
+  "repository": "https://github.com/as567-code/aditya-app.git",
   "description": "Your personal full-stack TypeScript web application starter",
   "license": "MIT",
   "private": true,

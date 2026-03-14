@@ -1,5 +1,5 @@
 variable "s3_bucket_name" {
-  default     = "aditya-app-frontend"
+  default     = "stackr-frontend"
   type        = string
   description = "Name of the S3 bucket"
 }

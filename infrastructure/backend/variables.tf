@@ -5,7 +5,7 @@ variable "github_repo_owner" {
 }
 
 variable "github_repo_name" {
-  default     = "aditya-app"
+  default     = "stackr"
   type        = string
   description = "Name of the GH repo, used to pull the docker images"
 }

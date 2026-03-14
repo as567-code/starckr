@@ -1,4 +1,4 @@
-# aditya-app
+# Stackr
 
 A personal full-stack TypeScript starter built on the MERN stack (MongoDB, Express, React, Node.js). Designed as a production-ready foundation with authentication, authorization, and tooling already wired up.
 

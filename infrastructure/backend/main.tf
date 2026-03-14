@@ -80,7 +80,7 @@ resource "aws_vpc" "main" {
 
   tags = {
     # TODO: set a variable to name this
-    Name = "aditya-app-main-vpc"
+    Name = "stackr-main-vpc"
   }
 }
 
@@ -97,7 +97,7 @@ resource "aws_subnet" "public" {
 
   tags = {
     # TODO: set a variable to name these
-    Name = "Public Aditya App Subnet ${count.index + 1}"
+    Name = "Public Stackr Subnet ${count.index + 1}"
   }
 }
 
@@ -164,7 +164,7 @@ resource "aws_security_group" "alb_sg" {
 
 resource "aws_security_group" "ecs_sg" {
   # TODO: set a better name for this (e.g. based on a variable)
-  name        = "aditya-app-ecs-sg"
+  name        = "stackr-ecs-sg"
   description = "Security group for ECS tasks"
   vpc_id      = aws_vpc.main.id
 

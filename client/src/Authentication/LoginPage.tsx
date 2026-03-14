@@ -140,7 +140,7 @@ function LoginPage() {
         }}
       >
         <Typography variant="h3" fontWeight={700} color="white">
-          Aditya App
+          Stackr
         </Typography>
         <Typography
           variant="body1"

@@ -1,10 +1,10 @@
 services:
   frontend:
-    image: ghcr.io/adityaswaroop/aditya-app:client
+    image: ghcr.io/adityaswaroop/stackr:client
     ports:
       - "3000:3000"
   backend:
-    image: ghcr.io/adityaswaroop/aditya-app:server
+    image: ghcr.io/adityaswaroop/stackr:server
     ports:
       - "4000:4000"
     env_file: ./server/.env

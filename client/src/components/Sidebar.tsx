@@ -47,7 +47,7 @@ export function Sidebar() {
     >
       <Box sx={{ p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h6" fontWeight={700}>
-          Aditya App
+          Stackr
         </Typography>
         <ThemeToggle />
       </Box>
