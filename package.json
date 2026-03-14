@@ -21,7 +21,9 @@
     "lint": "eslint --quiet --fix --ext .js,.ts,.tsx .",
     "prettier-check": "prettier --check .",
     "format": "prettier --write .",
-    "test": "cd server && yarn test"
+    "test": "cd server && yarn test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -39,6 +41,7 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/babel__core": "^7.20.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

@@ -9,3 +9,6 @@ yarn-error.log
 .env.test.local
 .env.production.local
 .terraform.env
+
+playwright-report/
+test-results/
