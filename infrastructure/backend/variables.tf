@@ -1,11 +1,11 @@
 variable "github_repo_owner" {
-  default     = "hack4impact-upenn"
+  default     = "adityaswaroop"
   type        = string
   description = "Name of the GH repo owner, used the pull the docker images"
 }
 
 variable "github_repo_name" {
-  default     = "boilerplate-s2022"
+  default     = "aditya-app"
   type        = string
   description = "Name of the GH repo, used to pull the docker images"
 }
