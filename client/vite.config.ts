@@ -10,7 +10,7 @@ export default defineConfig({
       // which Node's ES module resolver rejects. Point it at the index file directly.
       '@mui/material/utils': path.resolve(
         __dirname,
-        'node_modules/@mui/material/utils/index.js',
+        '../node_modules/@mui/material/utils/index.js',
       ),
     },
   },
